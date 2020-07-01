@@ -1,0 +1,27 @@
+{
+  "name": "groomerly_app",
+  "version": "1.0.0",
+  "description": "App to find groomer salons for your best companion",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "keywords": [
+    "grooming",
+    "pets",
+    "dogs",
+    "cats"
+  ],
+  "author": "Rob Arroyo",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "apollo-server": "^2.15.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.9.19"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
