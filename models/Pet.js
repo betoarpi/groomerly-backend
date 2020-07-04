@@ -1,33 +1,22 @@
 const mongoose = require('mongoose');
 
-const UsersSchema = mongoose.Schema({
-    firstName: {
+const PetsSchema = mongoose.Schema({
+    name: {
         type: String,
         required: true,
         trim: true
     },
-    lastName: {
+    petType: {
         type: String,
         required: true,
         trim: true
     },
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true
-    },
-    phone: {
+    breed: {
         type: String,
         required: true,
         trim: true
     },
-    password: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    avatar: {
+    picture: {
         type: String,
         required: true,
         trim: true
@@ -38,4 +27,4 @@ const UsersSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('User', UsersSchema);
+module.exports = mongoose.model('Pet', PetsSchema);

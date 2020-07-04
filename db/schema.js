@@ -7,6 +7,8 @@ const typeDefs = gql`
         firstName: String
         lastName: String
         email: String
+        phone: String
+        avatar: String
         created: String
     }
 
@@ -14,6 +16,8 @@ const typeDefs = gql`
         firstName: String!
         lastName: String!
         email: String!
+        phone: String!
+        avatar: String
         password: String!
     }
 

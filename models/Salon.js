@@ -11,7 +11,12 @@ const SalonsSchema = mongoose.Schema({
         required: true,
         trim: true
     },
-    location: {
+    longitude: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    latitude: {
         type: String,
         required: true,
         trim: true
@@ -31,6 +36,12 @@ const SalonsSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    coverPicture: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    //Need to add a photo gallery
     created: {
         type: Date,
         default: Date.now()
