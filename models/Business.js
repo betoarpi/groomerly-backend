@@ -1,12 +1,37 @@
 const mongoose = require('mongoose');
 
-const SalonsSchema = mongoose.Schema({
+const BusinessesSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
         trim: true
     },
     address: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    address2: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    city: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    state: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    country: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    zipcode: {
         type: String,
         required: true,
         trim: true
@@ -31,11 +56,6 @@ const SalonsSchema = mongoose.Schema({
         required: true,
         trim: true
     },
-    services: {
-        type: String,
-        required: true,
-        trim: true
-    },
     coverPicture: {
         type: String,
         required: true,
@@ -48,4 +68,4 @@ const SalonsSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Salon', SalonsSchema);
+module.exports = mongoose.model('Business', BusinessesSchema);

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const ReviewsSchema = mongoose.Schema({
     rating: {
-        type: Int,
+        type: Number,
         required: true,
         trim: true
     },

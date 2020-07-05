@@ -12,7 +12,7 @@ const ServicesSchema = mongoose.Schema({
         trim: true
     },
     cost: {
-        type: Float,
+        type: Number,
         required: true,
         trim: true
     },

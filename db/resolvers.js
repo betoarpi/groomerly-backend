@@ -2,7 +2,9 @@ const bcryptjs = require('bcryptjs');
 require('dotenv').config({ path: 'variables.env'});
 const jwt = require('jsonwebtoken');
 
+//Models
 const User = require('../models/User');
+const Business = require('../models/Business');
 
 //Create a token
 const createToken = (user, secret, expiresIn) => {
@@ -43,7 +45,7 @@ const resolvers = {
             }
         },
 
-        userAuthentication: async (_, {input}) => {
+        userAuthentication: async (_, { input }) => {
             const { email, password } = input;
 
             //Check if the user exists
@@ -61,6 +63,19 @@ const resolvers = {
             //Create the user's token
             return {
                 token: createToken(userExists, process.env.SECRET, '24h')
+            }
+        },
+
+        newBusiness: async (_, { input }) => {
+            try {
+                const newBusiness = new Business(input);
+
+                //Save in Database
+                const business = await newBusiness.save();
+                
+                return business;
+            } catch (error) {
+                console.log(error);
             }
         }
     }

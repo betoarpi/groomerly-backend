@@ -32,6 +32,11 @@ const UsersSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    role: {
+        type: String,
+        required: true,
+        trim: true
+    },
     created: {
         type: Date,
         default: Date.now()
