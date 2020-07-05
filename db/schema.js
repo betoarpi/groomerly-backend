@@ -33,6 +33,14 @@ const typeDefs = gql`
         created: String
     }
 
+    type Service {
+        id: ID
+        name: String
+        description: String
+        cost: Float
+        created: String
+    }
+
     input UserInput {
         firstName: String!
         lastName: String!
@@ -62,16 +70,27 @@ const typeDefs = gql`
         coverPicture: String
     }
 
+    input ServiceInput {
+        name: String!
+        description: String!
+        cost: Float!
+    }
+
     type Query {
         # Users
         getUser(token: String!): User
 
-        #Businesses
+        # Businesses
         getBusinesses: [Business]
         getBusinessById(id: ID!): Business
         getBusinessByName(name: String!): [Business]
         getBusinessByCity(city: String!): [Business] #How to get partial matches?
         getBusinessByZipcode(zipcode: String!): [Business]
+
+        # Services
+        getServices: [Service]
+        getServiceById(id: ID!): Service
+        getServiceByName(name: String!): [Service]
     }
 
     type Mutation {
@@ -82,7 +101,12 @@ const typeDefs = gql`
         # Businesses
         newBusiness(input: BusinessInput): Business
         updateBusiness(id: ID!, input: BusinessInput): Business
-        deleteBusiness(id: ID!) : String
+        deleteBusiness(id: ID!): String
+
+        # Services
+        newService(input: ServiceInput): Service
+        updateService(id: ID!, input: ServiceInput): Service
+        deleteService(id: ID!): String
     }
 `;
 

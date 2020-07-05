@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 //Models
 const User = require('../models/User');
 const Business = require('../models/Business');
+const Service = require('../models/Service');
 
 //Create a token
 const createToken = (user, secret, expiresIn) => {
@@ -14,13 +15,15 @@ const createToken = (user, secret, expiresIn) => {
 
 const resolvers = {
     Query: {
-        // User Queries
+        /* User Queries
+        =============================================== */
         getUser: async (_, { token }) => {
             const userId = await jwt.verify(token, process.env.SECRET);
             return userId;
         },
 
-        //Business Queries
+        /* Business Queries
+        =============================================== */
         getBusinesses: async () => {
             try {
                 const businesses = await Business.find({});
@@ -72,11 +75,45 @@ const resolvers = {
             }
 
             return business;
+        },
+
+        /* Services Queries
+        =============================================== */
+        getServices: async () => {
+            try {
+                const services = await Service.find({});
+                return services;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        getServiceById: async (_, { id }) => {
+            //Check if service exists
+            const service = await Service.findById(id);
+
+            if(!service) {
+                throw new Error('Service not found!');
+            }
+
+            return service;
+        },
+        
+        getServiceByName: async (_, { name }) => {
+            //Check if service exists
+            const service = await Service.find({name});
+
+            if(!service) {
+                throw new Error('Service not found!');
+            }
+
+            return service;
         }
     },
 
     Mutation: {
-        //User Mutations
+        /* User Mutations
+        =============================================== */
         newUser: async (_, { input }) => {
             const { email, password } = input;
             
@@ -122,7 +159,8 @@ const resolvers = {
             }
         },
 
-        //Business Mutations
+        /* Business Mutations
+        =============================================== */
         newBusiness: async (_, { input }) => {
             try {
                 const newBusiness = new Business(input);
@@ -158,11 +196,56 @@ const resolvers = {
                 throw new Error('Business not found!')
             }
 
-            //Update and save in database
+            //Delete Business from database
             await Business.findOneAndDelete({ _id: id });
 
             return 'Business deleted!';
+        },
+
+        /* Business Mutations
+        =============================================== */
+        newService: async (_, { input }) => {
+            try {
+                const newService = new Service(input);
+
+                //Save in Database
+                const service = await newService.save();
+
+                return service
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        updateService: async (_, {id, input }) => {
+            //Check if service exists
+            let service = await Service.findById(id);
+
+            if(!service) {
+                throw new Error('Service not found!');
+            }
+
+            //Update and save in database
+            service = await Service.findOneAndUpdate({ _id: id }, input, { new: true });
+
+
+            return service;
+        },
+
+        deleteService: async (_, { id }) => {
+            //Check if service exists
+            let service = await Service.findById(id);
+
+            if(!service) {
+                throw new Error('Service not found!');
+            }
+            
+            //Delete service from database
+            await Service.findOneAndDelete({ _id: id});
+
+            return 'Service deleted!'
         }
+
     }
 }
 
