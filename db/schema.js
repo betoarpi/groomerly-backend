@@ -63,7 +63,15 @@ const typeDefs = gql`
     }
 
     type Query {
+        # Users
         getUser(token: String!): User
+
+        #Businesses
+        getBusinesses: [Business]
+        getBusinessById(id: ID!): Business
+        getBusinessByName(name: String!): [Business]
+        getBusinessByCity(city: String!): [Business] #How to get partial matches?
+        getBusinessByZipcode(zipcode: String!): [Business]
     }
 
     type Mutation {
@@ -73,6 +81,8 @@ const typeDefs = gql`
 
         # Businesses
         newBusiness(input: BusinessInput): Business
+        updateBusiness(id: ID!, input: BusinessInput): Business
+        deleteBusiness(id: ID!) : String
     }
 `;
 
