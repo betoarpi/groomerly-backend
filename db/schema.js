@@ -2,6 +2,7 @@ const {gql} = require('apollo-server');
 
 //Schema
 const typeDefs = gql`
+    # Types
     type User {
         id: ID
         firstName: String
@@ -41,6 +42,16 @@ const typeDefs = gql`
         created: String
     }
 
+    type Pet {
+        id: ID
+        name: String
+        petType: String
+        breed: String
+        picture: String
+        created: String
+    }
+
+    # Inputs
     input UserInput {
         firstName: String!
         lastName: String!
@@ -76,6 +87,14 @@ const typeDefs = gql`
         cost: Float!
     }
 
+    input PetInput {
+        name: String!
+        petType: String!
+        breed: String!
+        picture: String!
+    }
+
+    # Queries
     type Query {
         # Users
         getUser(token: String!): User
@@ -84,13 +103,18 @@ const typeDefs = gql`
         getBusinesses: [Business]
         getBusinessById(id: ID!): Business
         getBusinessByName(name: String!): [Business]
-        getBusinessByCity(city: String!): [Business] #How to get partial matches?
+        getBusinessByCity(city: String!): [Business] # Need to figure out how to get partial matches?
         getBusinessByZipcode(zipcode: String!): [Business]
 
         # Services
         getServices: [Service]
         getServiceById(id: ID!): Service
         getServiceByName(name: String!): [Service]
+
+        # Pets
+        getPets: [Pet]
+        getPetById(id: ID!): Pet
+        getPetByName(name: String!): [Pet]
     }
 
     type Mutation {
@@ -107,6 +131,11 @@ const typeDefs = gql`
         newService(input: ServiceInput): Service
         updateService(id: ID!, input: ServiceInput): Service
         deleteService(id: ID!): String
+
+        # Pets
+        newPet(input: PetInput): Pet
+        updatePet(id: ID!, input: PetInput): Pet
+        deletePet(id: ID!): String
     }
 `;
 

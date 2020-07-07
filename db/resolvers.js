@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Business = require('../models/Business');
 const Service = require('../models/Service');
+const Pet = require('../models/Pet');
 
 //Create a token
 const createToken = (user, secret, expiresIn) => {
@@ -77,7 +78,7 @@ const resolvers = {
             return business;
         },
 
-        /* Services Queries
+        /* Service Queries
         =============================================== */
         getServices: async () => {
             try {
@@ -108,6 +109,39 @@ const resolvers = {
             }
 
             return service;
+        },
+
+        /* Pet Queries
+        =============================================== */
+        getPets: async () => {
+            try {
+                const pets = await Pet.find({});
+                return pets;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        getPetById: async (_, { id }) => {
+            //Check if pet exists
+            const pet = await Pet.findById(id);
+
+            if(!pet) {
+                throw new Error('Pet not found!');
+            }
+
+            return pet;
+        },
+
+        getPetByName: async (_, { name }) => {
+            //Check if pet exists
+            const pet = await Pet.find({name});
+
+            if(!pet) {
+                throw new Error('Pet not found!');
+            }
+
+            return pet;
         }
     },
 
@@ -211,7 +245,7 @@ const resolvers = {
                 //Save in Database
                 const service = await newService.save();
 
-                return service
+                return service;
             } catch (error) {
                 console.log(error);
             }
@@ -241,11 +275,53 @@ const resolvers = {
             }
             
             //Delete service from database
-            await Service.findOneAndDelete({ _id: id});
+            await Service.findOneAndDelete({ _id: id });
 
             return 'Service deleted!'
-        }
+        },
 
+        /* Pet Mutations
+        =============================================== */
+        newPet: async (_, { input }) => {
+            try {
+                const newPet = new Pet(input);
+
+                //Save in Database
+                const pet = await newPet.save();
+
+                return pet;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        updatePet: async (_, { id, input }) => {
+            //Check if pet exists
+            let pet = await Pet.findById(id);
+
+            if(!pet) {
+                throw new Error('Pet not found!');
+            }
+
+            //Update and save in database
+            pet = await Pet.findOneAndUpdate({ _id: id}, input, { new: true });
+
+            return pet;
+        },
+
+        deletePet: async (_, { id }) => {
+            //Check if service exists
+            let pet = await Pet.findById(id);
+
+            if(!pet) {
+                throw new Error('Pet not found!');
+            }
+
+            //Delete pet from database
+            await Pet.findOneAndDelete({ _id: id });
+
+            return 'Pet deleted!'
+        }
     }
 }
 
