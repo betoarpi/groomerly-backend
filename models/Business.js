@@ -62,6 +62,11 @@ const BusinessesSchema = mongoose.Schema({
         trim: true
     },
     //Need to add a photo gallery
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
     created: {
         type: Date,
         default: Date.now()

@@ -122,7 +122,16 @@ const resolvers = {
             }
         },
 
-        getPetById: async (_, { id }) => {
+        getPetsByUser: async (_, {}, ctx) => {
+            try {
+                const pets = await Pet.find({ user: ctx.user.id.toString() });
+                return pets;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        getPetById: async (_, { id }, ctx) => {
             //Check if pet exists
             const pet = await Pet.findById(id);
 
@@ -130,14 +139,8 @@ const resolvers = {
                 throw new Error('Pet not found!');
             }
 
-            return pet;
-        },
-
-        getPetByName: async (_, { name }) => {
-            //Check if pet exists
-            const pet = await Pet.find({name});
-
-            if(!pet) {
+            //Check if user can see it
+            if(pet.user.toString() !== ctx.user.id) {
                 throw new Error('Pet not found!');
             }
 
@@ -195,9 +198,13 @@ const resolvers = {
 
         /* Business Mutations
         =============================================== */
-        newBusiness: async (_, { input }) => {
+        newBusiness: async (_, { input }, ctx) => {
             try {
                 const newBusiness = new Business(input);
+
+                //Assign the user (business owner)
+                newBusiness.user = ctx.user.id;
+                console.log(ctx.user.id);
 
                 //Save in Database
                 const business = await newBusiness.save();
@@ -208,12 +215,17 @@ const resolvers = {
             }
         },
 
-        updateBusiness: async(_, { id, input }) => {
-            //Check if product exists
+        updateBusiness: async(_, { id, input }, ctx) => {
+            //Check if business exists
             let business = await Business.findById(id);
 
             if(!business) {
                 throw new Error('Business not found!')
+            }
+
+            //Check identity of the user
+            if(business.user.toString() !== ctx.user.id){
+                throw new Error("You don't have the credentials to update this Business.");
             }
 
             //Update and save in database
@@ -222,12 +234,17 @@ const resolvers = {
             return business;
         },
         
-        deleteBusiness: async(_, { id}) => {
+        deleteBusiness: async(_, { id }, ctx) => {
             //Check if product exists
             const business = await Business.findById(id);
 
             if(!business) {
                 throw new Error('Business not found!')
+            }
+
+            //Check identity of the user
+            if(business.user.toString() !== ctx.user.id){
+                throw new Error("You don't have the credentials to delete this Business.");
             }
 
             //Delete Business from database
@@ -236,11 +253,13 @@ const resolvers = {
             return 'Business deleted!';
         },
 
-        /* Business Mutations
+        /* Services Mutations
         =============================================== */
-        newService: async (_, { input }) => {
+        newService: async (_, { input }, ctx) => {
             try {
                 const newService = new Service(input);
+
+                //Assign the user (business owner)
 
                 //Save in Database
                 const service = await newService.save();
@@ -282,9 +301,12 @@ const resolvers = {
 
         /* Pet Mutations
         =============================================== */
-        newPet: async (_, { input }) => {
+        newPet: async (_, { input }, ctx) => {
             try {
                 const newPet = new Pet(input);
+
+                //Assign the user (pet owner)
+                newPet.user = ctx.user.id;
 
                 //Save in Database
                 const pet = await newPet.save();
@@ -295,12 +317,17 @@ const resolvers = {
             }
         },
 
-        updatePet: async (_, { id, input }) => {
+        updatePet: async (_, { id, input }, ctx) => {
             //Check if pet exists
             let pet = await Pet.findById(id);
 
             if(!pet) {
                 throw new Error('Pet not found!');
+            }
+
+            //Check if the identity of the user
+            if(pet.user.toString() !== ctx.user.id) {
+                throw new Error("You can't modify this pet. Only owners can modify their pets.");
             }
 
             //Update and save in database
@@ -309,12 +336,17 @@ const resolvers = {
             return pet;
         },
 
-        deletePet: async (_, { id }) => {
+        deletePet: async (_, { id }, ctx) => {
             //Check if service exists
             let pet = await Pet.findById(id);
 
             if(!pet) {
                 throw new Error('Pet not found!');
+            }
+
+            //Check if the identity of the user
+            if(pet.user.toString() !== ctx.user.id) {
+                throw new Error("You can't delete this pet. Only owners can delete their pets.");
             }
 
             //Delete pet from database

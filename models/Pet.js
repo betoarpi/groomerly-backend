@@ -21,6 +21,11 @@ const PetsSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
     created: {
         type: Date,
         default: Date.now()

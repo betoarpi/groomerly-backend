@@ -10,6 +10,7 @@ const typeDefs = gql`
         email: String
         phone: String
         avatar: String
+        role: String
         created: String
     }
 
@@ -31,6 +32,7 @@ const typeDefs = gql`
         phone: String
         hours: String
         coverPicture: String
+        user: ID
         created: String
     }
 
@@ -48,6 +50,7 @@ const typeDefs = gql`
         petType: String
         breed: String
         picture: String
+        user: ID
         created: String
     }
 
@@ -58,6 +61,7 @@ const typeDefs = gql`
         email: String!
         phone: String!
         avatar: String
+        role: String!
         password: String!
     }
 
@@ -113,8 +117,10 @@ const typeDefs = gql`
 
         # Pets
         getPets: [Pet]
+        getPetsByUser: [Pet]
         getPetById(id: ID!): Pet
-        getPetByName(name: String!): [Pet]
+
+        # Bookings
     }
 
     type Mutation {
@@ -136,6 +142,9 @@ const typeDefs = gql`
         newPet(input: PetInput): Pet
         updatePet(id: ID!, input: PetInput): Pet
         deletePet(id: ID!): String
+
+        # Bookings
+        
     }
 `;
 
