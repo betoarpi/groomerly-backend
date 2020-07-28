@@ -54,6 +54,18 @@ const typeDefs = gql`
         created: String
     }
 
+    type Employee {
+        id: ID
+        firstName: String
+        lastName: String
+        position: String
+        email: String
+        phone: String
+        avatar: String
+        user: ID
+        created: String
+    }
+
     # Inputs
     input UserInput {
         firstName: String!
@@ -98,6 +110,16 @@ const typeDefs = gql`
         picture: String!
     }
 
+    input EmployeeInput {
+        firstName: String!
+        lastName: String!
+        position: String!
+        email: String!
+        phone: String!
+        avatar: String
+        password: String!
+    }
+
     # Queries
     type Query {
         # Users
@@ -119,6 +141,11 @@ const typeDefs = gql`
         getPets: [Pet]
         getPetsByUser: [Pet]
         getPetById(id: ID!): Pet
+
+        # Employees
+        getEmployees: [Employee]
+        getEmployeesByUser: [Employee]
+        getEmployeeById(id: ID!): Employee
 
         # Bookings
     }
@@ -142,6 +169,11 @@ const typeDefs = gql`
         newPet(input: PetInput): Pet
         updatePet(id: ID!, input: PetInput): Pet
         deletePet(id: ID!): String
+
+        # Employees
+        newEmployee(input: EmployeeInput): Employee
+        updateEmployee(id: ID!, input: EmployeeInput): Employee
+        deleteEmployee(id: ID!): String
 
         # Bookings
         

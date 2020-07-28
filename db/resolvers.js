@@ -7,6 +7,7 @@ const User = require('../models/User');
 const Business = require('../models/Business');
 const Service = require('../models/Service');
 const Pet = require('../models/Pet');
+const Employee = require('../models/Employees');
 
 //Create a token
 const createToken = (user, secret, expiresIn) => {
@@ -141,10 +142,47 @@ const resolvers = {
 
             //Check if user can see it
             if(pet.user.toString() !== ctx.user.id) {
-                throw new Error('Pet not found!');
+                throw new Error("You don't have the credentials to see this pet.");
             }
 
             return pet;
+        },
+
+        /* Employee Queries
+        =============================================== */
+        getEmployees: async () => {
+            try {
+                const employees = await Employee.find({});
+                return employees;
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        getEmployeesByUser: async (_, {}, ctx) => {
+            try {
+                const employees = await Employee.find({ user: ctx.user.id.toString() });
+                return employees;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        getEmployeeById: async (_, { id }, ctx) => {
+            //Check if employee exists
+            const employee = await Employee.findById(id);
+
+            if(!employee) {
+                throw new Error('Employee not found!');
+            }
+
+            //Check if user can see it
+
+            if(!employee.user.toString() === ctx.user.id) {
+                throw new Error("You don't have the credentials to see this employee.")
+            }
+
+            return employee;
         }
     },
 
@@ -325,7 +363,7 @@ const resolvers = {
                 throw new Error('Pet not found!');
             }
 
-            //Check if the identity of the user
+            //Check the identity of the user
             if(pet.user.toString() !== ctx.user.id) {
                 throw new Error("You can't modify this pet. Only owners can modify their pets.");
             }
@@ -353,6 +391,62 @@ const resolvers = {
             await Pet.findOneAndDelete({ _id: id });
 
             return 'Pet deleted!'
+        },
+
+        /* Employee Mutations
+        =============================================== */
+        newEmployee: async (_, { input }, ctx) => {
+            try {
+                const newEmployee = new Employee(input);
+
+                //Assing the user (business owner)
+                newEmployee.user = ctx.user.id;
+
+                //Save in Database
+                const employee = await newEmployee.save();
+
+                return employee;
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        updateEmployee: async (_, { id, input }, ctx) => {
+            //Check if employee exists
+            let employee = await Employee.findById(id);
+
+            if(!employee) {
+                throw new Error('Employee not found!');
+            }
+
+            //Check the identity of the user
+            if(employee.user.toString() !== ctx.user.id){
+                throw new Error("You can't modify this employee. Only business owners can modify their business employees.");
+            }
+
+            //Update and save in the database
+            employee = await Employee.findOneAndUpdate({ _id: id }, input, { new: true });
+
+            return employee;
+        },
+
+        deleteEmployee: async (_, { id }, ctx) => {
+            //Check if employee exists
+            let employee = await Employee.findById(id);
+
+            if(!employee) {
+                throw new Error('Employee not found!');
+            }
+
+            //Check the identity of the user
+            if(employee.user.toString() !== ctx.user.id){
+                throw new Error("You can't delete this employee. Only business owners can delete their business employees.");
+            }
+
+            //Delete employee from database
+            await Employee.findOneAndDelete({ _id: id });
+
+            return 'Employe deleted!'
         }
     }
 }
