@@ -11,6 +11,11 @@ const UsersSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    position: {
+        type: String,
+        required: false,
+        trim: true
+    },
     email: {
         type: String,
         required: true,
@@ -33,8 +38,21 @@ const UsersSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        required: true,
-        trim: true
+        default: "CLIENT"
+    },
+    permissions: {
+        type: String,
+        default: "USER"
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: 'User'
+    },
+    business: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: 'Business'
     },
     created: {
         type: Date,

@@ -7,10 +7,14 @@ const typeDefs = gql`
         id: ID
         firstName: String
         lastName: String
+        position: String
         email: String
         phone: String
         avatar: String
-        role: String
+        role: UserRole
+        permissions: UserPermissions
+        user: ID
+        business: ID
         created: String
     }
 
@@ -41,6 +45,8 @@ const typeDefs = gql`
         name: String
         description: String
         cost: Float
+        lengthOfService: Float
+        user: ID
         created: String
     }
 
@@ -54,27 +60,30 @@ const typeDefs = gql`
         created: String
     }
 
-    type Employee {
-        id: ID
-        firstName: String
-        lastName: String
-        position: String
-        email: String
-        phone: String
-        avatar: String
-        user: ID
-        created: String
-    }
-
     # Inputs
     input UserInput {
         firstName: String!
         lastName: String!
+        position: String
         email: String!
         phone: String!
         avatar: String
-        role: String!
+        role: UserRole
+        permissions: UserPermissions
         password: String!
+    }
+    
+    input EmployeeInput {
+        firstName: String!
+        lastName: String!
+        position: String
+        email: String!
+        phone: String!
+        avatar: String
+        role: UserRole
+        permissions: UserPermissions
+        password: String!
+        business: ID!
     }
 
     input AuthenticationInput {
@@ -101,6 +110,7 @@ const typeDefs = gql`
         name: String!
         description: String!
         cost: Float!
+        lengthOfService: Float!
     }
 
     input PetInput {
@@ -110,20 +120,27 @@ const typeDefs = gql`
         picture: String!
     }
 
-    input EmployeeInput {
-        firstName: String!
-        lastName: String!
-        position: String!
-        email: String!
-        phone: String!
-        avatar: String
-        password: String!
+    #Enums
+    enum UserRole {
+        CLIENT
+        BUSINESSOWNER
+        EMPLOYEE
+    }
+
+    enum UserPermissions {
+        USER #User client of businesses
+        ADMIN #Business Owner
+        EMPLOYEE #User for a particular business
+        BUSINESSMANAGER #Employee + some admin permissions
+        SUPERADMIN #Platform admin with access to all
     }
 
     # Queries
     type Query {
         # Users
         getUser(token: String!): User
+
+        #getClientUsers
 
         # Businesses
         getBusinesses: [Business]
@@ -143,9 +160,10 @@ const typeDefs = gql`
         getPetById(id: ID!): Pet
 
         # Employees
-        getEmployees: [Employee]
-        getEmployeesByUser: [Employee]
-        getEmployeeById(id: ID!): Employee
+        getEmployees: [User]
+        getEmployeesByUser: [User]
+        getEmployeeById(id: ID!): User
+        getEmployeesByBusinessId(id: ID!): [User]
 
         # Bookings
     }
@@ -171,8 +189,8 @@ const typeDefs = gql`
         deletePet(id: ID!): String
 
         # Employees
-        newEmployee(input: EmployeeInput): Employee
-        updateEmployee(id: ID!, input: EmployeeInput): Employee
+        newEmployee(input: EmployeeInput): User
+        updateEmployee(id: ID!, input: EmployeeInput): User
         deleteEmployee(id: ID!): String
 
         # Bookings

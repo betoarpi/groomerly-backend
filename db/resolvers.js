@@ -7,7 +7,6 @@ const User = require('../models/User');
 const Business = require('../models/Business');
 const Service = require('../models/Service');
 const Pet = require('../models/Pet');
-const Employee = require('../models/Employees');
 
 //Create a token
 const createToken = (user, secret, expiresIn) => {
@@ -150,9 +149,9 @@ const resolvers = {
 
         /* Employee Queries
         =============================================== */
-        getEmployees: async () => {
+        getEmployees: async (_, {}, ctx) => {
             try {
-                const employees = await Employee.find({});
+                const employees = await User.find({ user: ctx.user.id.toString() });
                 return employees;
             } catch (error) {
                 console.log(error)
@@ -161,7 +160,7 @@ const resolvers = {
 
         getEmployeesByUser: async (_, {}, ctx) => {
             try {
-                const employees = await Employee.find({ user: ctx.user.id.toString() });
+                const employees = await User.find({ user: ctx.user.id.toString() });
                 return employees;
             } catch (error) {
                 console.log(error);
@@ -170,15 +169,16 @@ const resolvers = {
 
         getEmployeeById: async (_, { id }, ctx) => {
             //Check if employee exists
-            const employee = await Employee.findById(id);
+            const employee = await User.findById(id);
+
+            console.log(ctx.user)
 
             if(!employee) {
                 throw new Error('Employee not found!');
             }
 
             //Check if user can see it
-
-            if(!employee.user.toString() === ctx.user.id) {
+            if(employee.user.toString() !== ctx.user.id) {
                 throw new Error("You don't have the credentials to see this employee.")
             }
 
@@ -242,7 +242,6 @@ const resolvers = {
 
                 //Assign the user (business owner)
                 newBusiness.user = ctx.user.id;
-                console.log(ctx.user.id);
 
                 //Save in Database
                 const business = await newBusiness.save();
@@ -298,6 +297,7 @@ const resolvers = {
                 const newService = new Service(input);
 
                 //Assign the user (business owner)
+                newService.user = ctx.user.id;
 
                 //Save in Database
                 const service = await newService.save();
@@ -308,7 +308,7 @@ const resolvers = {
             }
         },
 
-        updateService: async (_, {id, input }) => {
+        updateService: async (_, {id, input }, ctx) => {
             //Check if service exists
             let service = await Service.findById(id);
 
@@ -316,9 +316,13 @@ const resolvers = {
                 throw new Error('Service not found!');
             }
 
+            //Check the identity of the user
+            if(service.user.toString() !== ctx.user.id) {
+                throw new Error("You can't modify this service. Only business owners can modify their own business information.")
+            }
+
             //Update and save in database
             service = await Service.findOneAndUpdate({ _id: id }, input, { new: true });
-
 
             return service;
         },
@@ -396,8 +400,16 @@ const resolvers = {
         /* Employee Mutations
         =============================================== */
         newEmployee: async (_, { input }, ctx) => {
+            const { email } = input;
             try {
-                const newEmployee = new Employee(input);
+                const newEmployee = new User(input);
+
+                //Check if the user exists
+                const employeeExists = await User.findOne({ email });
+                console.log(employeeExists);
+                if(employeeExists) {
+                    throw new Error('A user with this email is already registered.')
+                }
 
                 //Assing the user (business owner)
                 newEmployee.user = ctx.user.id;
@@ -408,12 +420,13 @@ const resolvers = {
                 return employee;
             } catch (error) {
                 console.log(error)
+                return error
             }
         },
 
         updateEmployee: async (_, { id, input }, ctx) => {
             //Check if employee exists
-            let employee = await Employee.findById(id);
+            let employee = await User.findById(id);
 
             if(!employee) {
                 throw new Error('Employee not found!');
@@ -425,14 +438,14 @@ const resolvers = {
             }
 
             //Update and save in the database
-            employee = await Employee.findOneAndUpdate({ _id: id }, input, { new: true });
+            employee = await User.findOneAndUpdate({ _id: id }, input, { new: true });
 
             return employee;
         },
 
         deleteEmployee: async (_, { id }, ctx) => {
             //Check if employee exists
-            let employee = await Employee.findById(id);
+            let employee = await User.findById(id);
 
             if(!employee) {
                 throw new Error('Employee not found!');
@@ -444,7 +457,7 @@ const resolvers = {
             }
 
             //Delete employee from database
-            await Employee.findOneAndDelete({ _id: id });
+            await User.findOneAndDelete({ _id: id });
 
             return 'Employe deleted!'
         }
