@@ -163,7 +163,6 @@ const typeDefs = gql`
         getEmployees: [User]
         getEmployeesByUser: [User]
         getEmployeeById(id: ID!): User
-        getEmployeesByBusinessId(id: ID!): [User]
 
         # Bookings
     }
