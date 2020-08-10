@@ -7,6 +7,7 @@ const User = require('../models/User');
 const Business = require('../models/Business');
 const Service = require('../models/Service');
 const Pet = require('../models/Pet');
+const Review = require('../models/Review');
 
 //Create a token
 const createToken = (user, secret, expiresIn) => {
@@ -151,7 +152,7 @@ const resolvers = {
         =============================================== */
         getEmployees: async (_, {}, ctx) => {
             try {
-                const employees = await User.find({ user: ctx.user.id.toString() });
+                const employees = await User.find();
                 return employees;
             } catch (error) {
                 console.log(error)
@@ -183,6 +184,18 @@ const resolvers = {
             }
 
             return employee;
+        },
+
+        /* Review Queries
+        =============================================== */
+        getReviews: async (_, {}, ctx) => {
+            try {
+                const reviews = await Review.find();
+                return reviews;
+            } catch (error) {
+                console.log(error);
+                return error
+            }
         }
     },
 
@@ -460,6 +473,44 @@ const resolvers = {
             await User.findOneAndDelete({ _id: id });
 
             return 'Employe deleted!'
+        },
+
+        /* Review Mutations
+        =============================================== */
+        newReview: async (_, { input }, ctx) => {
+            try {
+                const newReview = new Review(input);
+
+                //Assign the user (customer)
+                newReview.user = ctx.user.id;
+
+                //Save in database
+                const review = await newReview.save();
+
+                return review;
+            } catch (error) {
+                console.log(error);
+                return error
+            }
+        },
+
+        deleteReview: async (_, { id }, ctx) => {
+            //Check if review exists
+            let review = await Review.findById(id);
+
+            if(!review){
+                throw new Error('Review not found!');
+            }
+
+            //Check the identity of the user
+            if(ctx.user.permissions !== 'SUPERADMIN'){
+                throw new Error("You don't have the credentials to delete this review.");
+            }
+
+            //Delete from database
+            await Review.findOneAndDelete({ _id: id });
+
+            return 'Review deleted'
         }
     }
 }

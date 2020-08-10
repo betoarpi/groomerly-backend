@@ -10,6 +10,10 @@ const BookingsSchema = mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    reviewed: {
+        type: Boolean,
+        default: false
     }
 });
 

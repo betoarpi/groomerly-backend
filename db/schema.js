@@ -60,6 +60,15 @@ const typeDefs = gql`
         created: String
     }
 
+    type Review {
+        id: ID
+        rating: Float
+        review: String
+        user: ID
+        business: ID
+        service: ID
+    }
+
     # Inputs
     input UserInput {
         firstName: String!
@@ -68,8 +77,8 @@ const typeDefs = gql`
         email: String!
         phone: String!
         avatar: String
-        role: UserRole
-        permissions: UserPermissions
+        role: UserRole!
+        permissions: UserPermissions!
         password: String!
     }
     
@@ -80,8 +89,8 @@ const typeDefs = gql`
         email: String!
         phone: String!
         avatar: String
-        role: UserRole
-        permissions: UserPermissions
+        role: UserRole!
+        permissions: UserPermissions!
         password: String!
         business: ID!
     }
@@ -120,27 +129,33 @@ const typeDefs = gql`
         picture: String!
     }
 
+    input ReviewInput {
+        rating: Float!
+        review: String!
+        business: ID!
+        service: ID!
+    }
+
     #Enums
     enum UserRole {
         CLIENT
         BUSINESSOWNER
         EMPLOYEE
+        ADMIN
     }
 
     enum UserPermissions {
-        USER #User client of businesses
-        ADMIN #Business Owner
-        EMPLOYEE #User for a particular business
-        BUSINESSMANAGER #Employee + some admin permissions
-        SUPERADMIN #Platform admin with access to all
+        USER
+        ADMIN
+        EMPLOYEE
+        BUSINESSMANAGER
+        SUPERADMIN
     }
 
     # Queries
     type Query {
         # Users
         getUser(token: String!): User
-
-        #getClientUsers
 
         # Businesses
         getBusinesses: [Business]
@@ -164,7 +179,9 @@ const typeDefs = gql`
         getEmployeesByUser: [User]
         getEmployeeById(id: ID!): User
 
-        # Bookings
+        # Reviews
+        getReviews: [Review]
+        getReviewById(id: ID!): [Review]
     }
 
     type Mutation {
@@ -192,8 +209,9 @@ const typeDefs = gql`
         updateEmployee(id: ID!, input: EmployeeInput): User
         deleteEmployee(id: ID!): String
 
-        # Bookings
-        
+        # Reviews
+        newReview(input: ReviewInput): Review
+        deleteReview(id: ID!): String
     }
 `;
 
