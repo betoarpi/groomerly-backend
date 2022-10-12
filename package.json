@@ -16,7 +16,7 @@
   "author": "Rob Arroyo",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "apollo-server": "^2.15.0",
+    "apollo-server": "^2.25.4",
     "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
